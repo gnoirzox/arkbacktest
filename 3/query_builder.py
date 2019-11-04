@@ -7,8 +7,6 @@ class TableSelectBuilder:
         self.query = None
         self.where = None
 
-        return self
-
     def select(self, variables: list):
         self.variables = variables
 
@@ -17,9 +15,9 @@ class TableSelectBuilder:
     def getQuery(self) -> str:
         return self.query
 
-    def addWhereStatement(self, condition: tuple)
+    def addWhereStatement(self, condition: tuple):
         if self.where is None:
-            self.where = [condition]
+            self.where = [[condition]]
         else:
             self.where.append([condition])
 
@@ -74,19 +72,23 @@ class TableSelectBuilder:
         return self
 
     def build(self):
-        query = "SELECT {} FROM {} ".format(str(self.variables), self.table, '*')
+        query = "SELECT {} FROM {} ".format(str(self.variables).strip('[').strip(']'), self.table, '*')
 
         for element in self.where:
-            variable = element[0]
-            condition = elememt[1]
+            print(f'element: {element}')
+            print(f'variable: {element[0][0]}')
+            variable = element[0][0]
+            print(f'condition: {element[0][1]}')
+            condition = element[0][1]
 
-            if value1 is list:
-                value1 = '(' + str(elememt[2]) + ')'
+            print(f'value1: {element[0][2]}')
+            if element[0][2] is list:
+                value1 = tuple(element[0][2])
             else:
-                value1 = elememt[2])
+                value1 = element[0][2]
 
-            if len(elememt) == 4:
-                value2 = elememt[3]
+            if len(element[0]) == 4:
+                value2 = element[0][3]
 
             if 'WHERE' in query.split():
                 statement = 'AND'
@@ -94,9 +96,9 @@ class TableSelectBuilder:
                 statement = 'WHERE'
 
             if condition == 'BETWEEN':
-                query = query + f" {variable} > {value1} AND {variable} < {value2} "
+                query = query + statement + f" {variable} > '{value1}' AND {variable} < '{value2}' "
             else:
-                query = query + f" {variable} {condition} {value1} "
+                query = query + statement + f" {variable} {condition} {value1} "
 
         self.query = query
 
@@ -116,14 +118,14 @@ class BookmarkTableSelect:
 
             if variable == 'id' and condition in ['>', '<', '=', 'IN', 'NOTIN', 'BETWEEN']:
                 query_builder.pickWhereCondition(variable, condition, value)
-            elif variable == 'url' condition == '=':
+            elif variable == 'url' and condition == '=':
                 query_builder.pickWhereCondition(variable, condition, value)
-            elif variable = 'date' and condition in ['>', '<', '=', 'BETWEEN']:
+            elif variable == 'date' and condition in ['>', '<', '=', 'BETWEEN']:
                 date = parser(variable)
                 date_string = f'{date.year}-{date.month}-{date.day}'
 
                 query_builder.pickWhereCondition(date_string, condition, value)
-            elif variable = 'rating' and condition in ['>', '<', '=', 'BETWEEN']:
+            elif variable == 'rating' and condition in ['>', '<', '=', 'BETWEEN']:
                 query_builder.pickWhereCondition(variable, condition, value)
 
     def getQuery(self) -> str:

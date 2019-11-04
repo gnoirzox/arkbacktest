@@ -17,7 +17,7 @@ def largestLoss(prices_list: List[float]) -> Optional[int]:
 
         loss = prices_list[i] - prices_list[i - 1]
 
-        if maximun_loss is None or loss > maximum_loss:
+        if maximum_loss is None or loss > maximum_loss:
             maximum_loss = loss
 
     return maximum_loss

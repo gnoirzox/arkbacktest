@@ -75,20 +75,22 @@ class TableSelectBuilder:
         query = "SELECT {} FROM {} ".format(str(self.variables).strip('[').strip(']'), self.table, '*')
 
         for element in self.where:
-            print(f'element: {element}')
-            print(f'variable: {element[0][0]}')
             variable = element[0][0]
-            print(f'condition: {element[0][1]}')
             condition = element[0][1]
 
-            print(f'value1: {element[0][2]}')
-            if element[0][2] is list:
-                value1 = tuple(element[0][2])
+            if isinstance(element[0][2], list):
+                value1 = '(' + str(element[0][2]).strip('[]') + ')'
             else:
-                value1 = element[0][2]
+                if type(element[0][2]) is str:
+                    value1 = f"'{element[0][2]}'"
+                else:
+                    value1 = element[0][2]
 
             if len(element[0]) == 4:
-                value2 = element[0][3]
+                if type(element[0][3]) is str:
+                    value2 = f"'{element[0][3]}'"
+                else:
+                    value2 = element[0][3]
 
             if 'WHERE' in query.split():
                 statement = 'AND'
@@ -96,7 +98,7 @@ class TableSelectBuilder:
                 statement = 'WHERE'
 
             if condition == 'BETWEEN':
-                query = query + statement + f" {variable} > '{value1}' AND {variable} < '{value2}' "
+                query = query + statement + f" {variable} > {value1} AND {variable} < {value2} "
             else:
                 query = query + statement + f" {variable} {condition} {value1} "
 
